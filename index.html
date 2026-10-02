@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#12121a" />
+  <title>CRI — Centro de Restauración Iglesia</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+
+    <!-- ===== PANTALLA: MENÚ ===== -->
+    <section class="screen active" id="screen-menu">
+      <header class="menu-header">
+        <div class="logo">⛪</div>
+        <h1>CRI</h1>
+      </header>
+
+      <nav class="mode-list">
+        <button class="mode-btn" data-screen="members">
+          <span class="mode-icon">👥</span>
+          <span class="mode-info">
+            <strong>Miembros</strong>
+            <small>Registro, búsqueda y ficha de cada miembro</small>
+          </span>
+          <span class="mode-arrow">›</span>
+        </button>
+
+        <button class="mode-btn" data-screen="attendance">
+          <span class="mode-icon">📋</span>
+          <span class="mode-info">
+            <strong>Asistencia</strong>
+            <small>Marca quién está presente en la reunión de hoy</small>
+          </span>
+          <span class="mode-arrow">›</span>
+        </button>
+
+        <button class="mode-btn" data-screen="groups">
+          <span class="mode-icon">🤝</span>
+          <span class="mode-info">
+            <strong>Grupos</strong>
+            <small>Células, equipos y ministerios de la iglesia</small>
+          </span>
+          <span class="mode-arrow">›</span>
+        </button>
+
+        <button class="mode-btn" data-screen="offerings">
+          <span class="mode-icon">💰</span>
+          <span class="mode-info">
+            <strong>Ofrendas</strong>
+            <small>Registra y consulta las ofrendas de cada semana</small>
+          </span>
+          <span class="mode-arrow">›</span>
+        </button>
+
+        <button class="mode-btn" data-screen="events">
+          <span class="mode-icon">📅</span>
+          <span class="mode-info">
+            <strong>Eventos</strong>
+            <small>Próximos cultos, retiros y actividades</small>
+          </span>
+          <span class="mode-arrow">›</span>
+        </button>
+      </nav>
+
+      <footer class="menu-footer">
+        <div class="stat-pill">👥 Miembros: <span id="stat-members">0</span></div>
+        <div class="stat-pill">🗓 Semana: <span id="stat-week">0</span></div>
+      </footer>
+    </section>
+
+    <!-- ===== PANTALLA: MIEMBROS ===== -->
+    <section class="screen" id="screen-members">
+      <header class="game-header">
+        <button class="btn-back" data-back>‹</button>
+        <h2>Miembros</h2>
+        <div class="header-stat"><span id="members-count">0</span></div>
+      </header>
+
+      <div class="search-bar">
+        <input type="text" id="member-search" placeholder="🔍 Buscar miembro…" autocomplete="off" />
+      </div>
+
+      <div class="list" id="members-list"></div>
+
+      <div class="empty-state hidden" id="members-empty">
+        <span>🕊️</span>
+        <p>No se encontraron miembros</p>
+      </div>
+
+      <button class="btn-primary big" id="btn-add-member">＋ Nuevo miembro</button>
+    </section>
+
+    <!-- ===== PANTALLA: NUEVO / EDITAR MIEMBRO ===== -->
+    <section class="screen" id="screen-member-form">
+      <header class="game-header">
+        <button class="btn-back" data-back>‹</button>
+        <h2 id="form-title">Nuevo miembro</h2>
+        <div class="header-stat">👥</div>
+      </header>
+
+      <form id="member-form" class="form">
+        <label>Nombre completo *
+          <input type="text" id="f-name" required placeholder="Ej. María González" />
+        </label>
+        <label>Teléfono
+          <input type="tel" id="f-phone" placeholder="Ej. 81 1234 5678" />
+        </label>
+        <label>Correo
+          <input type="email" id="f-email" placeholder="Ej. correo@ejemplo.com" />
+        </label>
+        <label>Grupo
+          <select id="f-group">
+            <option value="">Sin grupo</option>
+          </select>
+        </label>
+        <div class="date-field">
+          <span class="date-field-label">Fecha de nacimiento</span>
+          <div class="date-display" id="f-birthday-dp-display">Sin fecha</div>
+
+          <div class="date-picker hidden" id="f-birthday-dp">
+            <div class="dp-nav">
+              <button type="button" id="f-birthday-dp-prev-year">⇤</button>
+              <button type="button" id="f-birthday-dp-prev-month">‹</button>
+              <span id="f-birthday-dp-label">—</span>
+              <button type="button" id="f-birthday-dp-next-month">›</button>
+              <button type="button" id="f-birthday-dp-next-year">⇥</button>
+            </div>
+            <div class="dp-head"><span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
+            <div class="dp-grid" id="f-birthday-dp-grid"></div>
+          </div>
+
+          <input type="date" id="f-birthday" />
+        </div>
+        <label>Notas
+          <textarea id="f-notes" rows="3" placeholder="Observaciones, oración, etc."></textarea>
+        </label>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary big" id="f-save">Guardar miembro</button>
+          <button type="button" class="btn-danger big hidden" id="f-delete">Eliminar miembro</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ===== PANTALLA: FICHA DE MIEMBRO ===== -->
+    <section class="screen" id="screen-member-detail">
+      <header class="game-header">
+        <button class="btn-back" data-back>‹</button>
+        <h2>Ficha</h2>
+        <div class="header-stat">👤</div>
+      </header>
+
+      <div class="detail-card">
+        <div class="detail-avatar" id="d-avatar">👤</div>
+        <h3 id="d-name">—</h3>
+        <span class="chip" id="d-group">Sin grupo</span>
+
+        <div class="detail-info">
+          <div class="info-row"><span>📞</span><span id="d-phone">—</span></div>
+          <div class="info-row"><span>✉️</span><span id="d-email">—</span></div>
+          <div class="info-row"><span>🎂</span><span id="d-birthday">—</span></div>
+          <div class="info-row"><span>🧮</span><span id="d-age">—</span></div>
+          <div class="info-row highlight"><span>⏳</span><span id="d-bday-countdown">—</span></div>
+          <div class="info-row"><span>✅</span><span id="d-attendance">—</span></div>
+        </div>
+
+        <div class="detail-notes" id="d-notes-wrap">
+          <strong>Notas</strong>
+          <p id="d-notes">—</p>
+        </div>
+      </div>
+
+      <div class="detail-actions">
+        <button class="btn-primary big" id="d-edit">✏️ Editar</button>
+        <button class="btn-secondary big" data-back>Volver</button>
+      </div>
+    </section>
+
+    <!-- ===== PANTALLA: ASISTENCIA ===== -->
+    <section class="screen" id="screen-attendance">
+      <header class="game-header">
+        <button class="btn-back" data-back>‹</button>
+        <h2>Asistencia</h2>
+        <div class="header-stat">⏱ <span id="att-present">0</span></div>
+      </header>
+
+      <div class="attendance-top">
+        <div class="date-field">
+          <span class="date-field-label">Fecha de la asistencia</span>
+          <div class="date-display" id="att-date-dp-display">—</div>
+
+          <div class="date-picker hidden" id="att-date-dp">
+            <div class="dp-nav">
+              <button type="button" id="att-date-dp-prev-year">⇤</button>
+              <button type="button" id="att-date-dp-prev-month">‹</button>
+              <span id="att-date-dp-label">—</span>
+              <button type="button" id="att-date-dp-next-month">›</button>
+              <button type="button" id="att-date-dp-next-year">⇥</button>
+            </div>
+            <div class="dp-head"><span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
+            <div class="dp-grid" id="att-date-dp-grid"></div>
+          </div>
+
+          <input type="date" id="att-date" />
+        </div>
+        <div class="attendance-summary">
+          <span>👥 <span id="att-total">0</span> miembros</span>
+          <span>✅ <span id="att-percent">0</span>% presentes</span>
+        </div>
+      </div>
+
+      <div class="list" id="attendance-list"></div>
+
+      <div class="attendance-actions">
+        <button class="btn-primary big" id="att-save">Guardar asistencia</button>
+        <button class="btn-secondary big" id="att-history-btn">🗓 Ver historial por fecha</button>
+      </div>
+    </section>
+
+    <!-- ===== PANTALLA: HISTORIAL DE ASISTENCIA ===== -->
+    <section class="screen" id="screen-attendance-history">
+      <header class="game-header">
+        <button class="btn-back" data-back>‹</button>
+        <h2>Historial</h2>
+        <div class="header-stat">🗓</div>
+      </header>
+
+      <div class="history-search">
+        <div class="date-field history-date-field">
+          <span class="date-field-label">Filtrar por fecha</span>
+          <div class="date-display" id="hist-date-filter-dp-display">Todas las fechas</div>
+
+          <div class="date-picker hidden" id="hist-date-filter-dp">
+            <div class="dp-nav">
+              <button type="button" id="hist-date-filter-dp-prev-year">⇤</button>
+              <button type="button" id="hist-date-filter-dp-prev-month">‹</button>
+              <span id="hist-date-filter-dp-label">—</span>
+              <button type="button" id="hist-date-filter-dp-next-month">›</button>
+              <button type="button" id="hist-date-filter-dp-next-year">⇥</button>
+            </div>
+            <div class="dp-head"><span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
+            <div class="dp-grid" id="hist-date-filter-dp-grid"></div>
+          </div>
+
+          <input type="date" id="hist-date-filter" />
+        </div>
+        <button class="btn-secondary" id="hist-clear-filter">Ver todo</button>
+      </div>
+
+      <div class="list" id="history-list"></div>
+
+      <div class="empty-state hidden" id="history-empty">
+        <span>🗓</span>
+        <p>Sin registros para esa fecha</p>
+      </div>
+    </section>
+
+    <!-- ===== PANTALLA: DETALLE DE UN DÍA ===== -->
+    <section class="screen" id="screen-attendance-day">
+      <header class="game-header">
+        <button class="btn-back" data-back>‹</button>
+        <h2 id="day-title">—</h2>
+        <div class="header-stat">📋</div>
+      </header>
+
+      <div class="attendance-summary">
+        <span>✅ <span id="day-present">0</span> presentes</span>
+        <span>👥 <span id="day-total">0</span> miembros</span>
+        <span>📊 <span id="day-percent">0</span>%</span>
+      </div>
+
+      <div class="list" id="day-list"></div>
+
+      <button class="btn-primary big" id="day-edit">✏️ Editar este día</button>
+    </section>
+
+    <!-- ===== PANTALLA: GRUPOS ===== -->
+    <section class="screen" id="screen-groups">
+      <header class="game-header">
+        <button class="btn-back" data-back>‹</button>
+        <h2>Grupos</h2>
+        <div class="header-stat"><span id="groups-count">0</span></div>
+      </header>
+
+      <div class="list" id="groups-list"></div>
+
+      <div class="empty-state hidden" id="groups-empty">
+        <span>🕊️</span>
+        <p>Aún no hay grupos creados</p>
+      </div>
+
+      <button class="btn-primary big" id="btn-add-group">＋ Nuevo grupo</button>
+    </section>
+
+    <!-- ===== PANTALLA: NUEVO GRUPO ===== -->
+    <section class="screen" id="screen-group-form">
+      <header class="game-header">
+        <button class="btn-back" data-back>‹</button>
+        <h2>Nuevo grupo</h2>
+        <div class="header-stat">🤝</div>
+      </header>
+
+      <form id="group-form" class="form">
+        <label>Nombre del grupo *
+          <input type="text" id="g-name" required placeholder="Ej. Jóvenes en Llama" />
+        </label>
+        <label>Líder
+          <input type="text" id="g-leader" placeholder="Nombre del líder" />
+        </label>
+        <label>Día de reunión
+          <select id="g-day">
+            <option>Lunes</option>
+            <option>Martes</option>
+            <option>Miércoles</option>
+            <option>Jueves</option>
+            <option>Viernes</option>
+            <option>Sábado</option>
+            <option>Domingo</option>
+          </select>
+        </label>
+        <label>Descripción
+          <textarea id="g-desc" rows="3" placeholder="A quién está dirigido, horario…"></textarea>
+        </label>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary big">Guardar grupo</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ===== PANTALLA: OFRENDAS ===== -->
+    <section class="screen" id="screen-offerings">
+      <header class="game-header">
+        <button class="btn-back" data-back>‹</button>
+        <h2>Ofrendas</h2>
+        <div class="header-stat">💰</div>
+      </header>
+
+      <div class="offering-summary">
+        <div class="offering-amount">
+          <span>Total registrado</span>
+          <strong id="off-total">$0</strong>
+        </div>
+        <div class="offering-amount secondary">
+          <span>Última semana</span>
+          <strong id="off-last">$0</strong>
+        </div>
+        <div class="offering-amount secondary danger">
+          <span>Gastos</span>
+          <strong id="off-expenses">$0</strong>
+        </div>
+        <div class="offering-amount">
+          <span>Balance</span>
+          <strong id="off-balance">$0</strong>
+        </div>
+      </div>
+
+      <div class="list" id="offerings-list"></div>
+
+      <div class="empty-state hidden" id="offerings-empty">
+        <span>💰</span>
+        <p>Sin movimientos registrados</p>
+      </div>
+
+      <button class="btn-primary big" id="btn-add-offering">＋ Registrar ofrenda</button>
+      <button class="btn-secondary big" id="btn-add-expense">－ Registrar gasto</button>
+    </section>
+
+    <!-- ===== PANTALLA: NUEVO / EDITAR MOVIMIENTO ===== -->
+    <section class="screen" id="screen-offering-form">
+      <header class="game-header">
+        <button class="btn-back" data-back>‹</button>
+        <h2 id="off-form-title">Registrar movimiento</h2>
+        <div class="header-stat" id="off-form-icon">💰</div>
+      </header>
+
+      <form id="offering-form" class="form">
+        <div class="date-field">
+          <span class="date-field-label">Fecha *</span>
+          <div class="date-display" id="o-date-dp-display">—</div>
+
+          <div class="date-picker hidden" id="o-date-dp">
+            <div class="dp-nav">
+              <button type="button" id="o-date-dp-prev-year">⇤</button>
+              <button type="button" id="o-date-dp-prev-month">‹</button>
+              <span id="o-date-dp-label">—</span>
+              <button type="button" id="o-date-dp-next-month">›</button>
+              <button type="button" id="o-date-dp-next-year">⇥</button>
+            </div>
+            <div class="dp-head"><span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
+            <div class="dp-grid" id="o-date-dp-grid"></div>
+          </div>
+
+          <input type="date" id="o-date" required />
+        </div>
+        <label>Monto (MXN) *
+          <input type="number" id="o-amount" required min="0" step="1" placeholder="Ej. 1500" />
+        </label>
+        <label>Tipo
+          <select id="o-type"></select>
+        </label>
+        <label>Notas
+          <textarea id="o-notes" rows="2" placeholder="Detalles adicionales…"></textarea>
+        </label>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary big" id="off-form-submit">Guardar movimiento</button>
+          <button type="button" class="btn-danger big hidden" id="off-delete">Eliminar movimiento</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ===== PANTALLA: EVENTOS ===== -->
+    <section class="screen" id="screen-events">
+      <header class="game-header">
+        <button class="btn-back" data-back>‹</button>
+        <h2>Eventos</h2>
+        <div class="header-stat"><span id="events-count">0</span></div>
+      </header>
+
+      <div class="events-past-bar">
+        <span>🕓 <span id="events-past-count">0</span> eventos ya pasaron</span>
+        <button id="btn-purge-events">Limpiar pasados</button>
+      </div>
+
+      <div class="list" id="events-list"></div>
+
+      <div class="empty-state hidden" id="events-empty">
+        <span>📅</span>
+        <p>Sin eventos programados</p>
+      </div>
+
+      <button class="btn-primary big" id="btn-add-event">＋ Nuevo evento</button>
+    </section>
+
+    <!-- ===== PANTALLA: NUEVO / EDITAR EVENTO ===== -->
+    <section class="screen" id="screen-event-form">
+      <header class="game-header">
+        <button class="btn-back" data-back>‹</button>
+        <h2 id="ev-form-title">Nuevo evento</h2>
+        <div class="header-stat">📅</div>
+      </header>
+
+      <form id="event-form" class="form">
+        <label>Título *
+          <input type="text" id="e-title" required placeholder="Ej. Retiro de jovenes" />
+        </label>
+        <div class="date-field">
+          <span class="date-field-label">Fecha *</span>
+          <div class="date-display" id="e-date-dp-display">—</div>
+
+          <div class="date-picker hidden" id="e-date-dp">
+            <div class="dp-nav">
+              <button type="button" id="e-date-dp-prev-year">⇤</button>
+              <button type="button" id="e-date-dp-prev-month">‹</button>
+              <span id="e-date-dp-label">—</span>
+              <button type="button" id="e-date-dp-next-month">›</button>
+              <button type="button" id="e-date-dp-next-year">⇥</button>
+            </div>
+            <div class="dp-head"><span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
+            <div class="dp-grid" id="e-date-dp-grid"></div>
+          </div>
+
+          <input type="date" id="e-date" required />
+        </div>
+        <label>Hora
+          <input type="time" id="e-time" />
+        </label>
+        <label>Descripción
+          <textarea id="e-desc" rows="3" placeholder="Lugar, responsable, detalles…"></textarea>
+        </label>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary big" id="ev-form-submit">Guardar evento</button>
+          <button type="button" class="btn-danger big hidden" id="ev-delete">Eliminar evento</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ===== PANTALLA: CONFIRMACIÓN ===== -->
+    <section class="screen" id="screen-confirm">
+      <div class="result-box">
+        <div class="result-emoji" id="confirm-emoji">✅</div>
+        <h2 id="confirm-title">¡Listo!</h2>
+        <p class="result-detail" id="confirm-text"></p>
+        <div class="result-actions">
+          <button class="btn-primary" id="confirm-ok">Continuar</button>
+          <button class="btn-secondary" id="confirm-cancel" hidden>Cancelar</button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <div id="dp-overlay" class="hidden"></div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
